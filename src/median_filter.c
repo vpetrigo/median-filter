@@ -23,8 +23,6 @@
         return 0;                                                                                                      \
     }
 
-GENERATE_COMPARE_FUNCTION(unsigned)
-GENERATE_COMPARE_FUNCTION(int)
 GENERATE_COMPARE_FUNCTION(float)
 GENERATE_COMPARE_FUNCTION(uint8_t)
 GENERATE_COMPARE_FUNCTION(uint16_t)
