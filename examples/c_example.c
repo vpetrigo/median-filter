@@ -9,7 +9,7 @@
 
 int main(void)
 {
-    struct median_filter_unsigned filter;
+    struct median_filter_uint32_t filter;
     unsigned buffer[3];
 
     median_filter_init(&filter, buffer, 3);
