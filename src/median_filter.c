@@ -61,8 +61,6 @@ static inline bool args_check(void *filter, void *buffer, size_t buffer_size)
         return true;                                                                                                   \
     }
 
-DEFINE_MEDIAN_INIT(unsigned)
-DEFINE_MEDIAN_INIT(int)
 DEFINE_MEDIAN_INIT(float)
 DEFINE_MEDIAN_INIT(uint8_t)
 DEFINE_MEDIAN_INIT(uint16_t)
@@ -91,8 +89,6 @@ DEFINE_MEDIAN_INIT(int64_t)
         return true;                                                                                                   \
     }
 
-DEFINE_MEDIAN_INSERT_NUMBER(unsigned)
-DEFINE_MEDIAN_INSERT_NUMBER(int)
 DEFINE_MEDIAN_INSERT_NUMBER(float)
 DEFINE_MEDIAN_INSERT_NUMBER(uint8_t)
 DEFINE_MEDIAN_INSERT_NUMBER(uint16_t)
@@ -109,8 +105,6 @@ DEFINE_MEDIAN_INSERT_NUMBER(int64_t)
         return filter->buffer[filter->size / 2];                                                                       \
     }
 
-DEFINE_MEDIAN_GET(unsigned)
-DEFINE_MEDIAN_GET(int)
 DEFINE_MEDIAN_GET(float)
 DEFINE_MEDIAN_GET(uint8_t)
 DEFINE_MEDIAN_GET(uint16_t)

@@ -1,4 +1,4 @@
-add_library(median_filter median_filter.c median_filter.c)
+add_library(median_filter median_filter.c median_filter.h)
 target_include_directories(median_filter PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
         $<INSTALL_INTERFACE:include>)

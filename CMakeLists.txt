@@ -22,7 +22,7 @@ if (ENABLE_TESTING)
 endif ()
 
 if (ENABLE_EXAMPLES)
-    add_subdirectory(example/)
+    add_subdirectory(examples/)
 endif ()
 
 add_subdirectory(src/)
