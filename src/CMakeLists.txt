@@ -3,6 +3,12 @@ target_include_directories(median_filter PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
         $<INSTALL_INTERFACE:include>)
 
+if (CMAKE_C_COMPILER_ID STREQUAL "Clang" OR CMAKE_C_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(median_filter PRIVATE -Wall -Wextra -Werror -Wconversion)
+elseif (CMAKE_C_COMPILER_ID STREQUAL "MSVC")
+    target_compile_options(median_filter PRIVATE /W3 /WX)
+endif ()
+
 add_library(median_filter_cpp INTERFACE)
 target_include_directories(median_filter_cpp INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
