@@ -25,6 +25,13 @@ if (ENABLE_TESTING)
     FetchContent_MakeAvailable(Catch2)
 
     enable_testing()
+
+    add_compile_options(--coverage)
+    add_link_options(--coverage)
+
+    add_custom_target(coverage
+            COMMAND gcovr -r ${CMAKE_CURRENT_LIST_DIR} -e ".*_test.cpp" -e ".*/examples/.*" -x coverage.info
+    )
 endif ()
 
 if (ENABLE_EXAMPLES)
