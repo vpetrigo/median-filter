@@ -24,4 +24,6 @@ TEST_CASE("Optimized median filter", "[optimized_median_filter]")
     optimized_mf_insert_value(&filter, 3);
     optimized_mf_debug(&filter);
     REQUIRE(optimized_mf_get_median(&filter) == 2);
+    optimized_mf_insert_value(&filter, 4);
+    optimized_mf_debug(&filter);
 }
