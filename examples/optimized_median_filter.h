@@ -20,14 +20,14 @@ struct median_filter_node {
 
 struct optimized_median_filter {
     struct median_filter_node *buffer;
-    struct median_filter_node *head;
-    struct median_filter_node *tail;
+    struct median_filter_node *median;
+    struct median_filter_node head;
+    struct median_filter_node tail;
     size_t current_pos;
     size_t size;
 };
 
-void optimized_mf_init(struct optimized_median_filter *filter, struct median_filter_node *main_buffer,
-                       size_t buffer_size);
+void optimized_mf_init(struct optimized_median_filter *filter, struct median_filter_node *buffer, size_t buffer_size);
 void optimized_mf_insert_value(struct optimized_median_filter *filter, unsigned value);
 unsigned optimized_mf_get_median(const struct optimized_median_filter *filter);
 
