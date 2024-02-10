@@ -77,6 +77,7 @@ DEFINE_MEDIAN_INIT(int64_t)
         if (filter == NULL) {                                                                                          \
             return false;                                                                                              \
         }                                                                                                              \
+                                                                                                                       \
         filter->buffer[filter->current_pos] = sample;                                                                  \
         filter->current_pos = (filter->current_pos + 1) % filter->buffer_size;                                         \
                                                                                                                        \
