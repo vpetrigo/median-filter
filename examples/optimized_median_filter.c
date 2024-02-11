@@ -9,6 +9,16 @@
 #include <stdio.h>
 #include <string.h>
 
+static inline size_t get_insert_position(const struct optimized_median_filter *filter)
+{
+    return filter->current_pos;
+}
+
+static inline size_t get_next_position(const struct optimized_median_filter *filter)
+{
+    return (filter->current_pos + 1) % filter->size;
+}
+
 void optimized_mf_init(struct optimized_median_filter *filter, struct median_filter_node *buffer, size_t buffer_size)
 {
     filter->head.next = &filter->tail;
@@ -23,14 +33,15 @@ void optimized_mf_init(struct optimized_median_filter *filter, struct median_fil
 
 void optimized_mf_insert_value(struct optimized_median_filter *filter, unsigned value)
 {
+    const size_t insert_pos = get_insert_position(filter);
     struct median_filter_node *scan_old = NULL;
     /* Points to pointer to first (largest) datum in chain */
     struct median_filter_node *scan = &filter->head;
-    struct median_filter_node *insert = &filter->buffer[filter->current_pos];
+    struct median_filter_node *insert = &filter->buffer[insert_pos];
     struct median_filter_node *insert_next = insert->next;
     const struct median_filter_node *const end = &filter->tail;
 
-    filter->current_pos = (filter->current_pos + 1) % filter->size;
+    filter->current_pos = get_next_position(filter);
     insert->value = value;
     /* Median initially to first in chain */
     filter->median = &filter->head;
