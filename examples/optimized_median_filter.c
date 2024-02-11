@@ -55,7 +55,7 @@ void optimized_mf_insert_value(struct optimized_median_filter *filter, unsigned 
             insert->next = scan_old->next; /* Chain it in here.  */
             scan_old->next = insert;       /* Mark it chained in. */
             value = 0;
-        };
+        }
 
         /* Step median pointer down chain after doing odd-numbered element */
         filter->median = filter->median->next; /* Step median pointer.  */
