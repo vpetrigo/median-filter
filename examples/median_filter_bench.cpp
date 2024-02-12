@@ -3,8 +3,8 @@
  * \brief
  * \author
  */
-
 #include "naive_median_filter.h"
+#include "optimized_median_filter.h"
 
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -24,6 +24,72 @@ std::vector<unsigned> generate_random_data()
                   [&dist, &mersenne_engine] { return dist(mersenne_engine); });
 
     return random_data;
+}
+
+TEST_CASE("Optimized median filter", "[naive_optimized_median_filter]")
+{
+    BENCHMARK_ADVANCED("Window size = 3")(Catch::Benchmark::Chronometer meter)
+    {
+        const auto random_data = generate_random_data();
+        struct optimized_median_filter filter {};
+        struct median_filter_node buffer[3];
+
+        optimized_mf_init(&filter, buffer, 3);
+
+        meter.measure([&random_data, &filter] {
+            for (const auto &e : random_data) {
+                optimized_mf_insert_value(&filter, e);
+            }
+        });
+    };
+
+    BENCHMARK_ADVANCED("Window size = 16")
+    (Catch::Benchmark::Chronometer meter)
+    {
+        const auto random_data = generate_random_data();
+        struct optimized_median_filter filter {};
+        struct median_filter_node buffer[16];
+
+        optimized_mf_init(&filter, buffer, 16);
+
+        meter.measure([&random_data, &filter] {
+            for (const auto &e : random_data) {
+                optimized_mf_insert_value(&filter, e);
+            }
+        });
+    };
+
+    BENCHMARK_ADVANCED("Window size = 128")
+    (Catch::Benchmark::Chronometer meter)
+    {
+        const auto random_data = generate_random_data();
+        struct optimized_median_filter filter {};
+        struct median_filter_node buffer[128];
+
+        optimized_mf_init(&filter, buffer, 128);
+
+        meter.measure([&random_data, &filter] {
+            for (const auto &e : random_data) {
+                optimized_mf_insert_value(&filter, e);
+            }
+        });
+    };
+
+    BENCHMARK_ADVANCED("Window size = 1024")
+    (Catch::Benchmark::Chronometer meter)
+    {
+        const auto random_data = generate_random_data();
+        struct optimized_median_filter filter {};
+        struct median_filter_node buffer[1024];
+
+        optimized_mf_init(&filter, buffer, 1024);
+
+        meter.measure([&random_data, &filter] {
+            for (const auto &e : random_data) {
+                optimized_mf_insert_value(&filter, e);
+            }
+        });
+    };
 }
 
 TEST_CASE("Naive median filter", "[naive_median_filter]")
