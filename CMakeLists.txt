@@ -11,6 +11,7 @@ else ()
 endif ()
 
 option(ENABLE_TESTING "Enable library tests" OFF)
+option(ENABLE_BENCHMARK "Enable example benchmarks" OFF)
 option(BUILD_EXAMPLES "Enable examples building" OFF)
 
 if (ENABLE_TESTING)
