@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <array>
+#include <iostream>
 #include <random>
 
 std::array<unsigned, 1024> generate_random_data()
@@ -49,6 +50,51 @@ TEST_CASE("Optimized median filter", "[optimized_median_filter]")
         REQUIRE(optimized_mf_get_median(&filter) == 3);
     }
 
+    SECTION("Second simple test")
+    {
+        optimized_mf_insert_value(&filter, 3);
+        optimized_mf_debug(&filter);
+        optimized_mf_insert_value(&filter, 2);
+        optimized_mf_debug(&filter);
+        optimized_mf_insert_value(&filter, 1);
+        optimized_mf_debug(&filter);
+        REQUIRE(optimized_mf_get_median(&filter) == 2);
+        optimized_mf_insert_value(&filter, 1);
+        optimized_mf_debug(&filter);
+        REQUIRE(optimized_mf_get_median(&filter) == 1);
+    }
+
+    SECTION("Third simple test")
+    {
+        optimized_mf_insert_value(&filter, 3);
+        optimized_mf_debug(&filter);
+        optimized_mf_insert_value(&filter, 3);
+        optimized_mf_debug(&filter);
+        optimized_mf_insert_value(&filter, 3);
+        optimized_mf_debug(&filter);
+        REQUIRE(optimized_mf_get_median(&filter) == 3);
+        optimized_mf_insert_value(&filter, 1);
+        optimized_mf_debug(&filter);
+        REQUIRE(optimized_mf_get_median(&filter) == 3);
+    }
+
+    SECTION("Forth simple test")
+    {
+        optimized_mf_insert_value(&filter, 3);
+        optimized_mf_debug(&filter);
+        optimized_mf_insert_value(&filter, 3);
+        optimized_mf_debug(&filter);
+        optimized_mf_insert_value(&filter, 3);
+        optimized_mf_debug(&filter);
+        REQUIRE(optimized_mf_get_median(&filter) == 3);
+        optimized_mf_insert_value(&filter, 3);
+        optimized_mf_debug(&filter);
+        REQUIRE(optimized_mf_get_median(&filter) == 3);
+        optimized_mf_insert_value(&filter, 1);
+        optimized_mf_debug(&filter);
+        REQUIRE(optimized_mf_get_median(&filter) == 3);
+    }
+
     SECTION("Insert same value")
     {
         const unsigned value = 1;
@@ -68,6 +114,7 @@ TEST_CASE("Optimized median filter", "[optimized_median_filter]")
 
         for (const auto &e : input) {
             optimized_mf_insert_value(&filter, e);
+            optimized_mf_debug(&filter);
         }
 
         std::sort(std::begin(input) + 1021, std::end(input));

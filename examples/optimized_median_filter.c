@@ -19,11 +19,55 @@ static inline size_t get_next_position(const struct optimized_median_filter *fil
     return (filter->current_pos + 1) % filter->size;
 }
 
+static inline void find_median(struct optimized_median_filter *filter)
+{
+    struct median_filter_node *it = filter->smallest;
+
+    for (size_t i = 0; i < filter->size / 2 && it->next != NULL; ++i) {
+        it = it->next;
+    }
+
+    filter->median = it;
+}
+
+static inline void remove_node_from_list(struct median_filter_node *node)
+{
+    if (node->prev != NULL) {
+        node->prev->next = node->next;
+    }
+
+    if (node->next != NULL) {
+        node->next->prev = node->prev;
+    }
+
+    node->prev = NULL;
+    node->next = NULL;
+}
+
+static inline void insert_after_node(struct median_filter_node *node, struct median_filter_node *insert)
+{
+    if (node->next != NULL) {
+        node->next->prev = insert;
+        insert->next = node->next;
+    }
+
+    node->next = insert;
+    insert->prev = node;
+}
+
+static inline void insert_before_node(struct median_filter_node *node, struct median_filter_node *insert) {
+    if (node->prev != NULL) {
+        node->prev->next = insert;
+        insert->prev = node->prev;
+    }
+    
+    insert->next = node;
+    node->prev = insert;
+}
+
 void optimized_mf_init(struct optimized_median_filter *filter, struct median_filter_node *buffer, size_t buffer_size)
 {
-    filter->head.next = &filter->tail;
-    filter->tail.next = NULL;
-    filter->tail.value = 0;
+    filter->smallest = NULL;
     filter->median = NULL;
     filter->buffer = buffer;
     filter->size = buffer_size;
@@ -34,68 +78,44 @@ void optimized_mf_init(struct optimized_median_filter *filter, struct median_fil
 void optimized_mf_insert_value(struct optimized_median_filter *filter, unsigned value)
 {
     const size_t insert_pos = get_insert_position(filter);
-    struct median_filter_node *scan_old = NULL;
-    /* Points to pointer to first (largest) datum in chain */
-    struct median_filter_node *scan = &filter->head;
     struct median_filter_node *insert = &filter->buffer[insert_pos];
-    struct median_filter_node *insert_next = insert->next;
-    const struct median_filter_node *const end = &filter->tail;
 
-    filter->current_pos = get_next_position(filter);
+    if (filter->smallest == NULL) {
+        filter->smallest = insert;
+        insert->value = value;
+        goto exit;
+    }
+
+    if (filter->smallest == insert) {
+        filter->smallest = insert->next;
+    }
+
     insert->value = value;
-    /* Median initially to first in chain */
-    filter->median = &filter->head;
+    remove_node_from_list(insert);
 
-    /* Handle chain-out of first item in chain as special case */
-    if (scan->next == insert) {
-        scan->next = insert_next;
-    }
+    struct median_filter_node *current = filter->smallest;
 
-    scan_old = scan;
-    scan = scan->next;
-
-    /* Loop through the chain, normal loop exit via break. */
-    for (size_t i = 0; i < filter->size; ++i) {
-        /* Handle odd-numbered item in chain  */
-        if (scan->next == insert) {
-            scan->next = insert_next; /* Chain out the old datum.*/
-        }
-
-        if (scan->value < value) /* If datum is larger than scanned value,*/
-        {
-            insert->next = scan_old->next; /* Chain it in here.  */
-            scan_old->next = insert;       /* Mark it chained in. */
-            value = 0;
-        }
-
-        /* Step median pointer down chain after doing odd-numbered element */
-        filter->median = filter->median->next; /* Step median pointer.  */
-
-        if (scan == end) {
+    while (current->next != NULL) {
+        if (current->value > insert->value) {
             break;
         }
 
-        scan_old = scan;   /* Save this pointer and   */
-        scan = scan->next; /* step down chain */
-
-        /* Handle even-numbered item in chain.  */
-        if (scan->next == insert) {
-            scan->next = insert_next;
-        }
-
-        if (scan->value < value) {
-            insert->next = scan_old->next; /* Chain it in here.  */
-            scan_old->next = insert;       /* Mark it chained in. */
-            value = 0;
-        }
-
-        if (scan == end) {
-            break;
-        }
-
-        scan_old = scan;   /* Save this pointer and   */
-        scan = scan->next; /* step down chain */
+        current = current->next;
     }
+
+    if (current->value > insert->value) {
+        if (current == filter->smallest) {
+            filter->smallest = insert;
+        }
+        insert_before_node(current, insert);
+    }
+    else {
+        insert_after_node(current, insert);
+    }
+
+exit:
+    filter->current_pos = get_next_position(filter);
+    find_median(filter);
 }
 
 unsigned optimized_mf_get_median(const struct optimized_median_filter *filter)
@@ -105,20 +125,22 @@ unsigned optimized_mf_get_median(const struct optimized_median_filter *filter)
 
 void optimized_mf_debug(const struct optimized_median_filter *filter)
 {
-    const struct median_filter_node *current = filter->head.next;
-    const struct median_filter_node *const end = &filter->tail;
+    const struct median_filter_node *current = filter->smallest;
 
+    printf("Tail value: %u\n", filter->smallest->value);
     puts("Print buffer layout:");
+
     for (size_t i = 0; i < filter->size; ++i) {
         printf("%u ", filter->buffer[i].value);
     }
 
     puts("\nPrint ordered list:");
-    while (current != end) {
+
+    while (current != NULL) {
         printf("%u", current->value);
         current = current->next;
 
-        if (current != end) {
+        if (current != NULL) {
             printf(" -> ");
         }
     }

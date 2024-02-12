@@ -14,15 +14,15 @@ extern "C" {
 #include <stddef.h>
 
 struct median_filter_node {
+    struct median_filter_node *prev;
     struct median_filter_node *next;
     unsigned value;
 };
 
 struct optimized_median_filter {
     struct median_filter_node *buffer;
+    struct median_filter_node *smallest;
     struct median_filter_node *median;
-    struct median_filter_node head;
-    struct median_filter_node tail;
     size_t current_pos;
     size_t size;
 };
