@@ -34,7 +34,7 @@ if (ENABLE_TESTING)
 
     enable_testing()
     add_custom_target(coverage
-            COMMAND gcovr -r ${CMAKE_CURRENT_LIST_DIR} -e ".*_test.cpp.*" -e ".*/examples/.*" -x coverage.info
+            COMMAND gcovr -r ${CMAKE_CURRENT_LIST_DIR} -e ".*_test\.cpp.*" -e ".*/examples/.*" -x coverage.info
     )
 endif ()
 
