@@ -4,6 +4,13 @@ project(median_filter C CXX)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 11)
 
+macro(add_coverage_flags target)
+    if (ENABLE_TESTING)
+        target_compile_options(${target} PRIVATE --coverage)
+        target_link_options(${target} PRIVATE --coverage)
+    endif ()
+endmacro()
+
 if (CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
     set(INSTALL_LIB ON)
 else ()
@@ -11,6 +18,7 @@ else ()
 endif ()
 
 option(ENABLE_TESTING "Enable library tests" OFF)
+option(ENABLE_BENCHMARK "Enable example benchmarks" OFF)
 option(BUILD_EXAMPLES "Enable examples building" OFF)
 
 if (ENABLE_TESTING)
@@ -25,10 +33,6 @@ if (ENABLE_TESTING)
     FetchContent_MakeAvailable(Catch2)
 
     enable_testing()
-
-    add_compile_options(--coverage)
-    add_link_options(--coverage)
-
     add_custom_target(coverage
             COMMAND gcovr -r ${CMAKE_CURRENT_LIST_DIR} -e ".*_test.cpp" -e ".*/examples/.*" -x coverage.info
     )
@@ -41,7 +45,6 @@ endif ()
 add_subdirectory(src/)
 
 add_library(median_filter::median_filter ALIAS median_filter)
-add_library(median_filter::median_filter_cpp ALIAS median_filter_cpp)
 
 if (INSTALL_LIB)
     include(GNUInstallDirs)
@@ -54,7 +57,6 @@ if (INSTALL_LIB)
 
     install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} FILES_MATCHING PATTERN "*.h")
     install(TARGETS median_filter EXPORT ${PROJECT_NAME}-targets INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-    install(TARGETS median_filter_cpp EXPORT ${PROJECT_NAME}-targets INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
     install(EXPORT ${PROJECT_NAME}-targets NAMESPACE ${PROJECT_NAME}:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME})
     install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc" DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
     install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake" DESTINATION ${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME})
