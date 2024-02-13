@@ -4,7 +4,6 @@
  */
 #include "median_filter.h"
 
-#include <stdio.h>
 #include <string.h>
 
 // PRIVATE FUNCTION DEFINITIONS
@@ -97,7 +96,6 @@ REMOVE_NODE_FROM_LIST(int64_t)
                                               struct median_filter_node_##ty *insert)                                  \
     {                                                                                                                  \
         if (node->next != NULL) {                                                                                      \
-            puts("HERE");                                                                                                           \
             node->next->prev = insert;                                                                                 \
             insert->next = node->next;                                                                                 \
         }                                                                                                              \
