@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.27)
+cmake_minimum_required(VERSION 3.21)
 project(median_filter C CXX)
 
 set(CMAKE_C_STANDARD 11)
