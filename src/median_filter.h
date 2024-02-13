@@ -13,10 +13,29 @@ extern "C" {
 #include <stddef.h>
 #include <stdint.h>
 
+#define MEDIAN_FILTER_DECLARE_NODE_STRUCT(ty)                                                                          \
+    struct median_filter_node_##ty {                                                                                   \
+        struct median_filter_node_##ty *prev;                                                                          \
+        struct median_filter_node_##ty *next;                                                                          \
+        ty value;                                                                                                      \
+    };
+
+MEDIAN_FILTER_DECLARE_NODE_STRUCT(float)
+MEDIAN_FILTER_DECLARE_NODE_STRUCT(double)
+MEDIAN_FILTER_DECLARE_NODE_STRUCT(uint8_t)
+MEDIAN_FILTER_DECLARE_NODE_STRUCT(uint16_t)
+MEDIAN_FILTER_DECLARE_NODE_STRUCT(uint32_t)
+MEDIAN_FILTER_DECLARE_NODE_STRUCT(uint64_t)
+MEDIAN_FILTER_DECLARE_NODE_STRUCT(int8_t)
+MEDIAN_FILTER_DECLARE_NODE_STRUCT(int16_t)
+MEDIAN_FILTER_DECLARE_NODE_STRUCT(int32_t)
+MEDIAN_FILTER_DECLARE_NODE_STRUCT(int64_t)
+
 #define MEDIAN_FILTER_DECLARE_STRUCT(ty)                                                                               \
     struct median_filter_##ty {                                                                                        \
-        ty *buffer;                                                                                                    \
-        size_t buffer_size;                                                                                            \
+        struct median_filter_node_##ty *buffer;                                                                        \
+        struct median_filter_node_##ty *smallest;                                                                      \
+        struct median_filter_node_##ty *median;                                                                        \
         size_t current_pos;                                                                                            \
         size_t size;                                                                                                   \
     }
@@ -33,7 +52,8 @@ MEDIAN_FILTER_DECLARE_STRUCT(int32_t);
 MEDIAN_FILTER_DECLARE_STRUCT(int64_t);
 
 #define MEDIAN_FILTER_DECLARE_INIT(ty)                                                                                 \
-    bool median_filter_init_##ty(struct median_filter_##ty *filter, ty *buffer, size_t buffer_size)
+    bool median_filter_init_##ty(struct median_filter_##ty *filter, struct median_filter_node_##ty *buffer,            \
+                                 size_t buffer_size)
 
 MEDIAN_FILTER_DECLARE_INIT(float);
 MEDIAN_FILTER_DECLARE_INIT(double);
@@ -47,7 +67,7 @@ MEDIAN_FILTER_DECLARE_INIT(int32_t);
 MEDIAN_FILTER_DECLARE_INIT(int64_t);
 
 #define MEDIAN_FILTER_DECLARE_INSERT(ty)                                                                               \
-    bool median_filter_insert_number_##ty(struct median_filter_##ty *filter, ty sample)
+    bool median_filter_insert_value_##ty(struct median_filter_##ty *filter, ty sample)
 
 MEDIAN_FILTER_DECLARE_INSERT(float);
 MEDIAN_FILTER_DECLARE_INSERT(double);
@@ -81,7 +101,7 @@ MEDIAN_FILTER_DECLARE_GET(int64_t);
     fn##_##ty
 
 #define median_filter_gen_line_ptr(ty, fn) ty * : fn##_##ty
-// TODO: int32/uint32 specific functions based on architecture
+
 #define median_filter_init(filter, buf, size)                                                                          \
     _Generic((buf),                                                                                                    \
         median_filter_gen_line_ptr(float, median_filter_init),                                                         \
@@ -128,7 +148,8 @@ MEDIAN_FILTER_DECLARE_GET(int64_t);
 
 #ifdef __cplusplus
 #define MEDIAN_FILTER_INIT_OVERLOAD(ty)                                                                                \
-    static inline bool median_filter_init(struct median_filter_##ty *filter, ty *buffer, size_t buffer_size)           \
+    static inline bool median_filter_init(struct median_filter_##ty *filter, struct median_filter_node_##ty *buffer,   \
+                                          size_t buffer_size)                                                          \
     {                                                                                                                  \
         return median_filter_init_##ty(filter, buffer, buffer_size);                                                   \
     }
@@ -145,9 +166,9 @@ MEDIAN_FILTER_INIT_OVERLOAD(int32_t)
 MEDIAN_FILTER_INIT_OVERLOAD(int64_t)
 
 #define MEDIAN_FILTER_INSERT_NUMBER(ty)                                                                                \
-    static inline bool median_filter_insert_number(struct median_filter_##ty *filter, ty sample)                       \
+    static inline bool median_filter_insert_value(struct median_filter_##ty *filter, ty sample)                        \
     {                                                                                                                  \
-        return median_filter_insert_number_##ty(filter, sample);                                                       \
+        return median_filter_insert_value_##ty(filter, sample);                                                        \
     }
 
 MEDIAN_FILTER_INSERT_NUMBER(float)
