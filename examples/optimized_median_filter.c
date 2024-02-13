@@ -1,13 +1,15 @@
 /**
  * \file
  * \brief
- * \author
+ * \author Vladimir Petrigo
  */
 
 #include "optimized_median_filter.h"
 
 #include <stdio.h>
 #include <string.h>
+
+// PRIVATE FUNCTION DECLARATIONS
 
 static inline size_t get_insert_position(const struct optimized_median_filter *filter)
 {
@@ -55,12 +57,13 @@ static inline void insert_after_node(struct median_filter_node *node, struct med
     insert->prev = node;
 }
 
-static inline void insert_before_node(struct median_filter_node *node, struct median_filter_node *insert) {
+static inline void insert_before_node(struct median_filter_node *node, struct median_filter_node *insert)
+{
     if (node->prev != NULL) {
         node->prev->next = insert;
         insert->prev = node->prev;
     }
-    
+
     insert->next = node;
     node->prev = insert;
 }
@@ -83,6 +86,7 @@ void optimized_mf_insert_value(struct optimized_median_filter *filter, unsigned 
     if (filter->smallest == NULL) {
         filter->smallest = insert;
         insert->value = value;
+        filter->median = filter->smallest;
         goto exit;
     }
 
@@ -107,6 +111,7 @@ void optimized_mf_insert_value(struct optimized_median_filter *filter, unsigned 
         if (current == filter->smallest) {
             filter->smallest = insert;
         }
+
         insert_before_node(current, insert);
     }
     else {

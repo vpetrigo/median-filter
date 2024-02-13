@@ -95,6 +95,26 @@ TEST_CASE("Optimized median filter", "[optimized_median_filter]")
         REQUIRE(optimized_mf_get_median(&filter) == 3);
     }
 
+    SECTION("Fifth simple test")
+    {
+        optimized_mf_insert_value(&filter, 3);
+        optimized_mf_debug(&filter);
+        optimized_mf_insert_value(&filter, 3);
+        optimized_mf_debug(&filter);
+        optimized_mf_insert_value(&filter, 3);
+        optimized_mf_debug(&filter);
+        REQUIRE(optimized_mf_get_median(&filter) == 3);
+        optimized_mf_insert_value(&filter, 3);
+        optimized_mf_debug(&filter);
+        REQUIRE(optimized_mf_get_median(&filter) == 3);
+        optimized_mf_insert_value(&filter, 1);
+        optimized_mf_debug(&filter);
+        REQUIRE(optimized_mf_get_median(&filter) == 3);
+        optimized_mf_insert_value(&filter, 3);
+        optimized_mf_debug(&filter);
+        REQUIRE(optimized_mf_get_median(&filter) == 3);
+    }
+
     SECTION("Insert same value")
     {
         const unsigned value = 1;
