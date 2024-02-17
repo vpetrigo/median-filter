@@ -16,6 +16,30 @@ The implementation is based on [Phil Ekstrom's algorithm](https://www.embedded.c
 which allow adding any value within type's range. Original algorithm assumes that there is a special "smallest" value
 (usually the lower bound of an integer type used) at the end of a window.
 
+# Example
+
+---------
+
+```c
+#include "median_filter.h"
+
+#include <stdio.h>
+
+int main(void)
+{
+    MEDIAN_FILTER_NEW(filter, uint32_t);
+    MEDIAN_FILTER_BUFFER_NEW(buffer, 3, uint32_t);
+
+    median_filter_init(&filter, buffer, 3);
+    median_filter_insert_value(&filter, 3U);
+    median_filter_insert_value(&filter, 2U);
+    median_filter_insert_value(&filter, 1U);
+    printf("Value: %u\n", median_filter_get_median(&filter));
+
+    return 0;
+}
+```
+
 # Contribution
 
 --------------
