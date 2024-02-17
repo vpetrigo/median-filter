@@ -1,5 +1,6 @@
 /**
- * \brief
+ * \file
+ * \brief Median filter interface
  * \author Vladimir Petrigo
  */
 #ifndef MEDIAN_FILTER_H
@@ -15,9 +16,9 @@ extern "C" {
 
 #define MEDIAN_FILTER_DECLARE_NODE_STRUCT(ty)                                                                          \
     struct median_filter_node_##ty {                                                                                   \
-        struct median_filter_node_##ty *prev;                                                                          \
-        struct median_filter_node_##ty *next;                                                                          \
-        ty value;                                                                                                      \
+        struct median_filter_node_##ty *prev; /**< Pointer to the previous (smaller) element */                        \
+        struct median_filter_node_##ty *next; /**< Pointer to the next (greater) element */                            \
+        ty value;                             /**< Value of the element */                                             \
     };
 
 MEDIAN_FILTER_DECLARE_NODE_STRUCT(float)
@@ -50,6 +51,9 @@ MEDIAN_FILTER_DECLARE_STRUCT(int8_t);
 MEDIAN_FILTER_DECLARE_STRUCT(int16_t);
 MEDIAN_FILTER_DECLARE_STRUCT(int32_t);
 MEDIAN_FILTER_DECLARE_STRUCT(int64_t);
+
+#define MEDIAN_FILTER_NEW(name, ty) struct median_filter_##ty name
+#define MEDIAN_FILTER_BUFFER_NEW(name, size, ty) struct median_filter_node_##ty name[size]
 
 #define MEDIAN_FILTER_DECLARE_INIT(ty)                                                                                 \
     bool median_filter_init_##ty(struct median_filter_##ty *filter, struct median_filter_node_##ty *buffer,            \
@@ -100,7 +104,7 @@ MEDIAN_FILTER_DECLARE_GET(int64_t);
     ty:                                                                                                                \
     fn##_##ty
 
-#define median_filter_gen_line_ptr(ty, fn) ty * : fn##_##ty
+#define median_filter_gen_line_ptr(ty, fn) struct median_filter_node_##ty * : fn##_##ty
 
 #define median_filter_init(filter, buf, size)                                                                          \
     _Generic((buf),                                                                                                    \
@@ -115,18 +119,18 @@ MEDIAN_FILTER_DECLARE_GET(int64_t);
         median_filter_gen_line_ptr(int32_t, median_filter_init),                                                       \
         median_filter_gen_line_ptr(int64_t, median_filter_init))(filter, buf, size)
 
-#define median_filter_insert_number(filter, sample)                                                                    \
+#define median_filter_insert_value(filter, sample)                                                                     \
     _Generic((sample),                                                                                                 \
-        median_filter_gen_line(float, median_filter_insert_number),                                                    \
-        median_filter_gen_line(double, median_filter_insert_number),                                                   \
-        median_filter_gen_line(uint8_t, median_filter_insert_number),                                                  \
-        median_filter_gen_line(uint16_t, median_filter_insert_number),                                                 \
-        median_filter_gen_line(uint32_t, median_filter_insert_number),                                                 \
-        median_filter_gen_line(uint64_t, median_filter_insert_number),                                                 \
-        median_filter_gen_line(int8_t, median_filter_insert_number),                                                   \
-        median_filter_gen_line(int16_t, median_filter_insert_number),                                                  \
-        median_filter_gen_line(int32_t, median_filter_insert_number),                                                  \
-        median_filter_gen_line(int64_t, median_filter_insert_number))(filter, sample)
+        median_filter_gen_line(float, median_filter_insert_value),                                                    \
+        median_filter_gen_line(double, median_filter_insert_value),                                                   \
+        median_filter_gen_line(uint8_t, median_filter_insert_value),                                                  \
+        median_filter_gen_line(uint16_t, median_filter_insert_value),                                                 \
+        median_filter_gen_line(uint32_t, median_filter_insert_value),                                                 \
+        median_filter_gen_line(uint64_t, median_filter_insert_value),                                                 \
+        median_filter_gen_line(int8_t, median_filter_insert_value),                                                   \
+        median_filter_gen_line(int16_t, median_filter_insert_value),                                                  \
+        median_filter_gen_line(int32_t, median_filter_insert_value),                                                  \
+        median_filter_gen_line(int64_t, median_filter_insert_value))(filter, sample)
 
 #define median_filter_get_median(filter)                                                                               \
     _Generic((filter),                                                                                                 \

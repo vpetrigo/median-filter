@@ -1,5 +1,5 @@
 /**
- * \brief
+ * \brief Median filter implementation
  * \author Vladimir Petrigo
  */
 #include "median_filter.h"
