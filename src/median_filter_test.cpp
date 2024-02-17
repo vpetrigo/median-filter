@@ -14,64 +14,64 @@
 #include <random>
 
 template <typename T>
-auto get_filter();
+constexpr auto get_filter();
 
 template <>
-auto get_filter<std::uint8_t>()
+constexpr auto get_filter<std::uint8_t>()
 {
     return median_filter_uint8_t{};
 }
 
 template <>
-auto get_filter<std::uint16_t>()
+constexpr auto get_filter<std::uint16_t>()
 {
     return median_filter_uint16_t{};
 }
 
 template <>
-auto get_filter<std::uint32_t>()
+constexpr auto get_filter<std::uint32_t>()
 {
     return median_filter_uint32_t{};
 }
 
 template <>
-auto get_filter<std::uint64_t>()
+constexpr auto get_filter<std::uint64_t>()
 {
     return median_filter_uint64_t{};
 }
 
 template <>
-auto get_filter<std::int8_t>()
+constexpr auto get_filter<std::int8_t>()
 {
     return median_filter_int8_t{};
 }
 
 template <>
-auto get_filter<std::int16_t>()
+constexpr auto get_filter<std::int16_t>()
 {
     return median_filter_int16_t{};
 }
 
 template <>
-auto get_filter<std::int32_t>()
+constexpr auto get_filter<std::int32_t>()
 {
     return median_filter_int32_t{};
 }
 
 template <>
-auto get_filter<std::int64_t>()
+constexpr auto get_filter<std::int64_t>()
 {
     return median_filter_int64_t{};
 }
 
 template <>
-auto get_filter<float>()
+constexpr auto get_filter<float>()
 {
     return median_filter_float{};
 }
 
 template <>
-auto get_filter<double>()
+constexpr auto get_filter<double>()
 {
     return median_filter_double{};
 }
@@ -156,6 +156,24 @@ TEMPLATE_TEST_CASE("Median filter", "[median_filter]", std::uint8_t, std::uint16
             {
                 {TestType{10}, TestType{127}, TestType{1}},
                 TestType{10},
+            },
+            {
+                {TestType{10}, TestType{127}, TestType{1}},
+                TestType{10},
+            },
+            {
+                {
+                    TestType{10},
+                    TestType{127},
+                    TestType{1},
+                    TestType{127},
+                    TestType{1},
+                    TestType{10},
+                    TestType{127},
+                    TestType{127},
+                    TestType{10},
+                },
+                TestType{127},
             },
         };
 
