@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
-project(median_filter C CXX)
+project(median_filter
+        VERSION 1.0.0
+        LANGUAGES C CXX)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 11)
@@ -7,7 +9,10 @@ set(CMAKE_CXX_STANDARD 11)
 macro(add_coverage_flags target)
     if (ENABLE_TESTING)
         target_compile_options(${target} PRIVATE --coverage)
-        target_link_options(${target} PRIVATE --coverage)
+
+        if (NOT MSVC)
+            target_link_options(${target} PRIVATE --coverage)
+        endif ()
     endif ()
 endmacro()
 

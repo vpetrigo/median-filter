@@ -3,6 +3,7 @@ Median filter
 
 [![Test](https://github.com/vpetrigo/median-filter/actions/workflows/test.yml/badge.svg)](https://github.com/vpetrigo/median-filter/actions/workflows/test.yml)
 [![codecov](https://codecov.io/gh/vpetrigo/median-filter/graph/badge.svg?token=kqWLifLSB6)](https://codecov.io/gh/vpetrigo/median-filter)
+![GitHub Release](https://img.shields.io/github/v/release/vpetrigo/median-filter)
 
 Window 1-D median filter implementation suitable for embedded systems applications. Implementation contains generic
 functions for the following types:
