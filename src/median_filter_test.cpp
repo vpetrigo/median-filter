@@ -217,6 +217,10 @@ TEMPLATE_TEST_CASE("Median filter", "[median_filter]", std::uint8_t, std::uint16
                 TestType{2},
             },
             {
+                {TestType{3}, TestType{3}, TestType{0}, TestType{0}, TestType{0}},
+                TestType{0},
+            },
+            {
                 {TestType{3}, TestType{3}, TestType{3}, TestType{3}, TestType{1}, TestType{3}},
                 TestType{3},
             },

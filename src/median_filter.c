@@ -95,11 +95,6 @@ REMOVE_NODE_FROM_LIST(int64_t)
     static inline void insert_after_node_##ty(struct median_filter_node_##ty *node,                                    \
                                               struct median_filter_node_##ty *insert)                                  \
     {                                                                                                                  \
-        if (node->next != NULL) {                                                                                      \
-            node->next->prev = insert;                                                                                 \
-            insert->next = node->next;                                                                                 \
-        }                                                                                                              \
-                                                                                                                       \
         node->next = insert;                                                                                           \
         insert->prev = node;                                                                                           \
     }
