@@ -100,7 +100,8 @@ GET_FILTER_NODE(int64_t)
 template <typename T, typename std::enable_if<std::is_integral<T>::value>::type * = nullptr>
 auto get_distribution()
 {
-    return std::uniform_int_distribution<T>{std::numeric_limits<T>::min(), std::numeric_limits<T>::max()};
+    return std::uniform_int_distribution<std::uint64_t>{static_cast<std::uint64_t>(std::numeric_limits<T>::min()),
+                                                        static_cast<std::uint64_t>(std::numeric_limits<T>::max())};
 }
 
 template <typename T, typename std::enable_if<std::is_floating_point<T>::value>::type * = nullptr>
@@ -187,9 +188,80 @@ TEMPLATE_TEST_CASE("Median filter", "[median_filter]", std::uint8_t, std::uint16
         }
     }
 
+    SECTION("even buffer")
+    {
+        buffer.resize(4);
+        std::vector<TestCase> tests{
+            {
+                {TestType{0}, TestType{0}, TestType{0}, TestType{0}},
+                TestType{0},
+            },
+            {
+                {TestType{0}, TestType{0}, TestType{1}, TestType{1}},
+                TestType{1},
+            },
+            {
+                {TestType{0}, TestType{1}, TestType{1}, TestType{1}},
+                TestType{1},
+            },
+            {
+                {TestType{1}, TestType{1}, TestType{1}, TestType{1}},
+                TestType{1},
+            },
+            {
+                {TestType{1}, TestType{2}, TestType{3}, TestType{4}},
+                TestType{3},
+            },
+            {
+                {TestType{3}, TestType{2}, TestType{1}, TestType{0}},
+                TestType{2},
+            },
+            {
+                {TestType{3}, TestType{3}, TestType{3}, TestType{3}, TestType{1}, TestType{3}},
+                TestType{3},
+            },
+            {
+                {TestType{0}, TestType{1}, TestType{3}, TestType{2}, TestType{1}, TestType{2}},
+                TestType{2},
+            },
+            {
+                {TestType{10}, TestType{127}, TestType{1}, TestType{1}},
+                TestType{10},
+            },
+            {
+                {TestType{10}, TestType{127}, TestType{1}, TestType{127}},
+                TestType{127},
+            },
+            {
+                {
+                    TestType{10},
+                    TestType{127},
+                    TestType{1},
+                    TestType{127},
+                    TestType{1},
+                    TestType{10},
+                    TestType{127},
+                    TestType{127},
+                    TestType{10},
+                },
+                TestType{127},
+            },
+        };
+
+        for (const auto &test : tests) {
+            REQUIRE(median_filter_init(&filter, buffer.data(), buffer.size()));
+            for (const auto &sample : test.first) {
+                REQUIRE(median_filter_insert_value(&filter, sample));
+            }
+
+            REQUIRE(median_filter_get_median(&filter) == test.second);
+        }
+    }
+
     SECTION("invalid input")
     {
         CHECK_FALSE(median_filter_init(nullptr, buffer.data(), buffer.size()));
+        CHECK_FALSE(median_filter_init(nullptr, static_cast<decltype(get_filter_node<TestType>()) *>(nullptr), 0));
         CHECK_FALSE(
             median_filter_init(&filter, static_cast<decltype(get_filter_node<TestType>()) *>(nullptr), buffer.size()));
         CHECK_FALSE(median_filter_init(&filter, buffer.data(), 0));
@@ -211,7 +283,7 @@ TEMPLATE_TEST_CASE("Median filter", "[median_filter]", std::uint8_t, std::uint16
         std::vector<TestType> random_data(1024);
 
         std::generate(random_data.begin(), random_data.end(),
-                      [&mersenne_engine, &dist]() { return dist(mersenne_engine); });
+                      [&mersenne_engine, &dist]() { return static_cast<TestType>(dist(mersenne_engine)); });
 
         REQUIRE(median_filter_init(&filter, buffer.data(), buffer.size()));
 
@@ -234,7 +306,7 @@ TEMPLATE_TEST_CASE("Median filter", "[median_filter]", std::uint8_t, std::uint16
         std::vector<TestType> random_data(1024);
 
         std::generate(random_data.begin(), random_data.end(),
-                      [&mersenne_engine, &dist]() { return dist(mersenne_engine); });
+                      [&mersenne_engine, &dist]() { return static_cast<TestType>(dist(mersenne_engine)); });
 
         REQUIRE(median_filter_init(&filter, buffer.data(), buffer.size()));
         std::vector<TestType> random_data_input(buffer.size());
@@ -265,7 +337,7 @@ TEMPLATE_TEST_CASE("Median filter", "[median_filter]", std::uint8_t, std::uint16
         std::vector<TestType> random_data(1024);
 
         std::generate(random_data.begin(), random_data.end(),
-                      [&mersenne_engine, &dist]() { return dist(mersenne_engine); });
+                      [&mersenne_engine, &dist]() { return static_cast<TestType>(dist(mersenne_engine)); });
 
         REQUIRE(median_filter_init(&filter, buffer.data(), buffer.size()));
         std::vector<TestType> random_data_input(buffer.size());
